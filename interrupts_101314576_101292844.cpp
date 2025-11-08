@@ -52,15 +52,17 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             ///////////////////////////////////////////////////////////////////////////////////////////
             //Add your FORK output here
 
-                     PCB child = current;                  
+            int random_execution;
+
+            PCB child = current;                  
             child.PID  = current.PID + 1;
             child.PPID = current.PID;
             child.program_name = current.program_name;
             child.size = current.size;
             child.partition_number = -1;
-
-            execution += std::to_string(current_time) + ", " + std::to_string(duration_intr) + ", cloning the PCB\n";
-            current_time += duration_intr;
+            random_execution = std::rand() % 10 + 1;
+            execution += std::to_string(current_time) + ", " + std::to_string(random_execution) + ", cloning the PCB\n";
+            current_time += random_execution;
 
             bool child_alloc_ok = allocate_memory(&child);
 
@@ -165,8 +167,9 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             //Add your EXEC output here
             
 
+            int random_execution;
 
-                     unsigned int prog_size = get_size(program_name, external_files);
+            unsigned int prog_size = get_size(program_name, external_files);
             if (prog_size == (unsigned int)-1) prog_size = 1;
 
             execution += std::to_string(current_time) + ", " + std::to_string(duration_intr) + ", Program is " + std::to_string(prog_size) + " Mb large\n";
@@ -185,11 +188,16 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             current.size = prog_size;
             allocate_memory(&current);
 
-            execution += std::to_string(current_time) + ", 3, marking partition as occupied\n";
-            current_time += 3;
-            execution += std::to_string(current_time) + ", 6, updating PCB\n";
-            current_time += 6;
+            random_execution = std::rand() % 10 + 1;
+            execution += std::to_string(current_time) + "," + std::to_string(random_execution) + ", marking partition as occupied\n";
+            current_time += random_execution;
+
+            random_execution = std::rand() % 10 + 1;
+            execution += std::to_string(current_time) + "," + std::to_string(random_execution) + ", updating PCB\n";
+            current_time += random_execution;
+
             execution += std::to_string(current_time) + ", 0, scheduler called\n";
+
             execution += std::to_string(current_time) + ", 1, IRET\n";
             current_time += 1;
 
@@ -217,8 +225,7 @@ std::tuple<std::string, std::string, int> simulate_trace(std::vector<std::string
             ///////////////////////////////////////////////////////////////////////////////////////////
             //With the exec's trace (i.e. trace of external program), run the exec (HINT: think recursion)
             if (!exec_traces.empty()) {
-                auto [sub_exec, sub_status, sub_time] =
-                    simulate_trace(exec_traces, current_time, vectors, delays, external_files, current, wait_queue);
+                auto [sub_exec, sub_status, sub_time] = simulate_trace(exec_traces, current_time, vectors, delays, external_files, current, wait_queue);
                 execution += sub_exec;
                 system_status += sub_status;
                 current_time = sub_time;
